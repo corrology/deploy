@@ -59,6 +59,14 @@ spec:
             name: prod-iow-api-corr-ht-h2s-h2-service
             port:
               number: 3000        
+      - pathType: Prefix
+        path: /api-docs/
+        backend:
+          service:
+            name: prod-iow-api-corr-ht-h2s-h2-service
+            port:
+              number: 3000        
+
   tls:
   - hosts: 
     - iow.jpto.dev

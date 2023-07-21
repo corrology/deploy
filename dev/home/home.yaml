@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: home
+  labels:
+    app: home
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: home
+  template:
+    metadata:
+      labels:
+        app: home
+    spec:
+      initContainers:
+      - name: busybox
+        image: busybox
+        volumeMounts:
+          - name: corrology-home-html-volume
+            mountPath: /tmp
+        command:
+        - sh
+        - -c
+        - echo "<html><body><H1>Corrology Innovations Ltd. </H1> <h2>Coming Soon</h2></body></html>" > /tmp/index.html
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: corrology-home-html-volume
+            mountPath: /usr/share/nginx/html
+      volumes:
+      - name: corrology-home-html-volume
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: home-service
+spec:
+  selector:
+    app: home
+  ports:
+    - protocol: TCP
+      port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: home-ingress
+  namespace: corrology-home
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+    cert-manager.io/cluster-issuer: letsencrypt-production-corrology
+spec:
+  rules:
+  - host: dev.corrology.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: home-service
+            port:
+              number: 80
+  - host: www.dev.corrology.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: home-service
+            port:
+              number: 80
+  tls:
+  - hosts: 
+    - dev.corrology.com
+    - www.dev.corrology.com
+    secretName: home-dev-corrology-tls-production              

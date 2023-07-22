@@ -25,7 +25,7 @@ spec:
         command:
         - sh
         - -c
-        - git clone --branch main --single-branch https://github.com/corrology/home.git /tmp && /tmp/deploy/build.sh
+        - git clone --branch main --single-branch https://github.com/corrology/home.git /tmp && bash /tmp/deploy/build.sh
       containers:
       - name: nginx
         image: nginx:1.14.2

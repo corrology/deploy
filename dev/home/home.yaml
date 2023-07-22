@@ -5,7 +5,7 @@ metadata:
   labels:
     app: home
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: home
@@ -20,10 +20,12 @@ spec:
         volumeMounts:
           - name: corrology-home-html-volume
             mountPath: /tmp
+          - name: corrology-home-hugo-volume
+            mountPath: /www
         command:
         - sh
         - -c
-        - echo "<html><body><H1>Corrology Innovations Ltd. </H1> <h2>Coming Soon</h2></body></html>" > /tmp/index.html
+        - git clone --branch main --single-branch https://github.com/corrology/home.git /tmp && bash /tmp/deploy/build.sh
       containers:
       - name: nginx
         image: nginx:1.14.2
@@ -35,6 +37,9 @@ spec:
       volumes:
       - name: corrology-home-html-volume
         emptyDir: {}
+      - name: corrology-home-hugo-volume
+        emptyDir: {}
+  
 ---
 apiVersion: v1
 kind: Service

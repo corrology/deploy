@@ -15,8 +15,8 @@ spec:
         app: home
     spec:
       initContainers:
-      - name: busybox
-        image: busybox
+      - name: fetchdata
+        image: alpine/git:2.40.1
         volumeMounts:
           - name: corrology-home-html-volume
             mountPath: /tmp
